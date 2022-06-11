@@ -12,12 +12,16 @@ class ClientUpload extends JFrame implements ActionListener {
     JFileChooser fc;
     JButton b, b1;
     JTextField tf;
+    JLabel tl1;
+    JRadioButtonMenuItem r1, r2, r3;
+    ButtonGroup btnGroup;
     FileInputStream in;
     Socket s;
     DataOutputStream dout;
     DataInputStream din;
     String soundPath;
     String programPath;
+    String mode="1";
     int i;
 
     ClientUpload() {
@@ -25,6 +29,28 @@ class ClientUpload extends JFrame implements ActionListener {
         tf = new JTextField();
         tf.setBounds(20, 50, 190, 30);
         add(tf);
+        
+        tl1 = new JLabel("Modo de visualización");
+        tl1.setBounds(130, 100, 150, 30);
+        add(tl1);
+        btnGroup = new ButtonGroup();        
+        r1 = new JRadioButtonMenuItem("Modo 1", true);
+        r1.setBounds(20, 150, 100, 30);
+        r2 = new JRadioButtonMenuItem("Modo 2", false);
+        r2.setBounds(140, 150, 100, 30);
+        r3 = new JRadioButtonMenuItem("Modo 3", false);
+        r3.setBounds(260, 150, 100, 30);
+        //A single selection
+        btnGroup.add(r1);
+        btnGroup.add(r2);
+        btnGroup.add(r3);
+        add(r1);
+        add(r2);
+        add(r3);
+        
+        r1.addActionListener(this);
+        r2.addActionListener(this);
+        r3.addActionListener(this);
 
         b = new JButton("Browse Song");
         b.setBounds(250, 50, 150, 30);
@@ -54,17 +80,11 @@ class ClientUpload extends JFrame implements ActionListener {
         setLayout(null);
         setSize(400, 300);
         setVisible(true);
-        try {
-            s = new Socket("localhost", 10);
-            dout = new DataOutputStream(s.getOutputStream());
-            din = new DataInputStream(s.getInputStream());
-            send();
-        } catch (Exception e) {
-        }
     }
 
     public void actionPerformed(ActionEvent e) {
         try {
+        	//System.out.print(e.getSource());
             if (e.getSource() == b) {
                 int x = fc.showOpenDialog(null);
                 if (x == JFileChooser.APPROVE_OPTION) {
@@ -72,11 +92,23 @@ class ClientUpload extends JFrame implements ActionListener {
                 }
             }
             if (e.getSource() == b1) { //Button Run program
-             //   send();
            // System.out.print("Run");
 	            if(soundPath!=null) {
-	                ct.callRunCmd(soundPath, programPath);
+	                ct.callRunCmd(soundPath, programPath, mode);
 	            }
+            }
+            
+            if (e.getSource() == r1) { //Radio 1
+            	System.out.print("R1");
+            	mode="1";
+            }
+            if (e.getSource() == r2) { //Radio 2
+            	System.out.print("R2");
+            	mode="2";
+            }
+            if (e.getSource() == r3) { //Radio 2
+            	System.out.print("R3");
+            	mode="3";
             }
         } catch (Exception ex) {
         }
@@ -87,27 +119,6 @@ class ClientUpload extends JFrame implements ActionListener {
 		//System.out.println(f1.getAbsolutePath());
 		soundPath = f1.getAbsolutePath();
         tf.setText(f1.getAbsolutePath());//Path
-       // in = new FileInputStream(f1.getAbsolutePath());
-//        while ((i = in.read()) != -1) {
-//           // System.out.print(i);
-//        }
-    }
-    
-//    public void copyProgram() throws IOException {
-//        File f1 = fc2.getSelectedFile();
-//		//System.out.println(f1.getAbsolutePath());
-//        programPath = f1.getAbsolutePath();
-//        tf.setText(f1.getAbsolutePath());//Path
-//       // in = new FileInputStream(f1.getAbsolutePath());
-////        while ((i = in.read()) != -1) {
-////           // System.out.print(i);
-////        }
-//    }
-
-    public void send() throws IOException {
-        dout.write(i);
-        dout.flush();
-
     }
 
     public static void main(String... d) {
